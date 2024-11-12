@@ -86,16 +86,16 @@ export const contract = {
 ### Python code of function calling Chat GPT endpiont
 
 ```javascript
-async def get_gpt_response(query: str) -> str:
+async def get_response(query: str) -> str:
     async with aiohttp.ClientSession() as session:
         headers = {
-            'Authorization': f'Bearer {gpt_api_key}',
+            'Authorization': f'Bearer {chat_api_key}',
             'Content-Type': 'application/json',
         }
         payload = {
-            'model': 'gpt-4',  # or 'gpt-3.5-turbo' if you have access
+            'model': 'gpt-4',
             'messages': [{'role': 'user', 'content': query}],
-            'max_tokens': 100,  # Adjust as needed
+            'max_tokens': 100,
         }
         async with session.post(endpoint, json=payload, headers=headers) as response:
             if response.status == 200:
@@ -103,8 +103,9 @@ async def get_gpt_response(query: str) -> str:
                 message = ''.join(choice['message']['content'] for choice in data['choices'])
                 return message
             else:
-                print(f"Error fetching GPT response: {response.status}")
-                raise HTTPException(status_code=response.status, detail="Error fetching GPT response")
+                print(f"Error fetching Chat response: {response.status}")
+                raise HTTPException(status_code=response.status, detail="Error fetching Chat response")
+
 ```
 ### Run Fastapi backend
 
