@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-module.exports = ['ComPump', "COMP", 18, 1000000000000000000000000000n];
+module.exports = ['Pineapple', "PA", 18, 1000000000000000000000000000n];
 
 // module.exports = [
 //     "0x4200000000000000000000000000000000000006",
