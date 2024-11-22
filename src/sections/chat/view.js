@@ -89,14 +89,14 @@ export default function ChatPage() {
         sentences.push(`You've reached ${usage}/${limitPerday} daily limit of usage. Please fund more Pineapple token or try one day after!`);
         setSentences(sentences);
       }else{
-        sentences.push(`You've reached daily limit of usage. Please fund more Pineapple token or try one day after!`);
+        sentences.push(`API Server Error. The CHAT GPT API key might be running low on funds. Please add more credits to continue using it!`);
         setSentences(sentences);
       }
       setLoading(false);
     }catch(e){
       console.log("error fetching", e);
       sentences.pop();
-      sentences.push(`Server Error. Maybe Problem with Chat GPT Api key!`);
+      sentences.push(`API Server Error. The CHAT GPT API key might be running low on funds. Please add more credits to continue using it!`);
       setLoading(false);
     }
     

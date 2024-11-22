@@ -1,5 +1,5 @@
 export const contract = {
   9461: {
-    tokenAddr: "0xe9021eebfe1089d2a43c255ba098b381e6ab5cd6"
+    tokenAddr: "0x37B932Aa058623b38dAB3c595229004e285CFAfb"
   }
 };

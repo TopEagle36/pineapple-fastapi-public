@@ -72,22 +72,36 @@ class Agent:
     async def request_call(self, post: Post):
         timestamp = time.time()
         user_api_usage = await self.db.agents.find_one({"address": post.address})
-
-        if user_api_usage:
-            if timestamp - user_api_usage['timestamp'] >= 24 * 60 * 60:
-                return await self._update_agent(user_api_usage, post, timestamp)
-            else:
-                if post.pineappleAmt - user_api_usage['usage'] >= amt_per_call:
-                    return await self._update_usage(user_api_usage, post)
-                else:
-                    return JSONResponse(content={
-                        "type": "limit reached",
-                        "holding": post.pineappleAmt,
-                        "usage": user_api_usage['usage'],
-                        "message": '',
-                    })
+        # Check if user holding amount is less than the amount per call. If so, return limit reached.
+        if post.pineappleAmt < amt_per_call:
+            return JSONResponse(content={
+                "type": "limit reached",
+                "holding": post.pineappleAmt,
+                "usage": user_api_usage['usage'],
+                "message": '',
+            })
         else:
-            return await self._create_new_agent(post, timestamp)
+            # Check if user ever used our service.
+            if user_api_usage:
+                # Check if user requested a day before.
+                if timestamp - user_api_usage['timestamp'] >= 24 * 60 * 60:
+                    # As passed one day, return the request result and update timestamp user usage.
+                    return await self._update_agent(user_api_usage, post, timestamp)
+                else:
+                    # Check if user reached daily limit
+                    if post.pineappleAmt - user_api_usage['usage'] >= amt_per_call:
+                        return await self._update_usage(user_api_usage, post)
+                    else:
+                        # User reached limit
+                        return JSONResponse(content={
+                            "type": "limit reached",
+                            "holding": post.pineappleAmt,
+                            "usage": user_api_usage['usage'],
+                            "message": '',
+                        })
+            # Create new user agent with timestamp
+            else:
+                return await self._create_new_agent(post, timestamp)
 
     async def _create_new_agent(self, post, timestamp):
         await self.db.agents.insert_one({
@@ -146,5 +160,6 @@ async def get_posts():
     return JSONResponse(content=posts)
 
 @app.post("/posts/")
+# Get post request from frontend. Call request_call of Agent class.
 async def request_call(post: Post):
     return await agent.request_call(post)
